@@ -399,6 +399,10 @@ func parseSRTPProfile(val string) (*srtp.Profile, error) {
 	if !ok {
 		return nil, nil // ignore
 	}
+	// Patch because Nice CX One adds a | to the SRTP profile
+	if parts := strings.SplitN(skey, "|", 2); len(parts) > 0 {
+		skey = parts[0] // Take only the key material before |
+	}
 	keys, err := base64.StdEncoding.WithPadding(base64.StdPadding).DecodeString(skey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot parse crypto key %q: %v", skey, err)
